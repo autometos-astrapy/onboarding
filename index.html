@@ -20,6 +20,7 @@
             border-radius: 5px;
         }
         
+        /* جعل الشريط على اليسار يتطلب ضبط الـ HTML كما فعلنا بالأسفل */
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(to bottom, #b88a00, #8a6d3b);
             border-radius: 5px;
@@ -48,6 +49,12 @@
 
         * { box-sizing: border-box; outline: none; }
 
+        /* الإصلاح هنا: التمرير يتم على مستوى الـ HTML ليظهر الشريط يساراً */
+        html {
+            height: 100%;
+            overflow-y: auto; /* هذا يجبر الشريط ليكون في الجهة الصحيحة للغة (يسار) */
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
@@ -56,9 +63,9 @@
             align-items: center; 
             font-family: 'Cairo', sans-serif;
             background-color: var(--bg-deep);
-            overflow-y: auto; /* تغيير من hidden إلى auto */
             position: relative;
             padding: 20px;
+            /* تمت إزالة overflow-y من هنا */
         }
 
         /* =========================================
@@ -212,7 +219,7 @@
             cursor: pointer;
         }
         
-        /* تغيير لون الخلفية للخيارات (لأن الخيارات لا تقبل الشفافية في معظم المتصفحات) */
+        /* تغيير لون الخلفية للخيارات */
         select option {
             background: #111;
             color: #fff;
@@ -331,6 +338,87 @@
             </div>
 
             <div class="input-group">
+                <label>الدولة (Country)</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <select id="country" required>
+                        <option value="" disabled selected>اختر دولتك...</option>
+                        
+                        <option value="AU">🇦🇺 أستراليا</option>
+                        <option value="DE">🇩🇪 ألمانيا</option>
+                        <option value="IE">🇮🇪 أيرلندا</option>
+                        
+                        <option value="ES">🇪🇸 إسبانيا</option>
+                        <option value="ID">🇮🇩 إندونيسيا</option>
+                        <option value="IT">🇮🇹 إيطاليا</option>
+                        
+                        <option value="JO">🇯🇴 الأردن</option>
+                        <option value="AE">🇦🇪 الإمارات</option>
+                        <option value="BH">🇧🇭 البحرين</option>
+                        <option value="BR">🇧🇷 البرازيل</option>
+                        <option value="PT">🇵🇹 البرتغال</option>
+                        <option value="DZ">🇩🇿 الجزائر</option>
+                        <option value="DK">🇩🇰 الدنمارك</option>
+                        <option value="SA">🇸🇦 السعودية</option>
+                        <option value="SD">🇸🇩 السودان</option>
+                        <option value="SE">🇸🇪 السويد</option>
+                        <option value="SO">🇸🇴 الصومال</option>
+                        <option value="CN">🇨🇳 الصين</option>
+                        <option value="IQ">🇮🇶 العراق</option>
+                        <option value="KW">🇰🇼 الكويت</option>
+                        <option value="MA">🇲🇦 المغرب</option>
+                        <option value="MX">🇲🇽 المكسيك</option>
+                        <option value="UK">🇬🇧 المملكة المتحدة</option>
+                        <option value="NO">🇳🇴 النرويج</option>
+                        <option value="AT">🇦🇹 النمسا</option>
+                        <option value="IN">🇮🇳 الهند</option>
+                        <option value="US">🇺🇸 الولايات المتحدة</option>
+                        <option value="JP">🇯🇵 اليابان</option>
+                        <option value="YE">🇾🇪 اليمن</option>
+                        
+                        <option value="PK">🇵🇰 باكستان</option>
+                        <option value="BE">🇧🇪 بلجيكا</option>
+                        <option value="PL">🇵🇱 بولندا</option>
+                        
+                        <option value="TR">🇹🇷 تركيا</option>
+                        <option value="TN">🇹🇳 تونس</option>
+                        
+                        <option value="KM">🇰🇲 جزر القمر</option>
+                        <option value="ZA">🇿🇦 جنوب إفريقيا</option>
+                        <option value="DJ">🇩🇯 جيبوتي</option>
+                        
+                        <option value="RU">🇷🇺 روسيا</option>
+                        
+                        <option value="SG">🇸🇬 سنغافورة</option>
+                        <option value="SY">🇸🇾 سوريا</option>
+                        <option value="CH">🇨🇭 سويسرا</option>
+                        
+                        <option value="OM">🇴🇲 عمان</option>
+                        
+                        <option value="FR">🇫🇷 فرنسا</option>
+                        <option value="PS">🇵🇸 فلسطين</option>
+                        
+                        <option value="QA">🇶🇦 قطر</option>
+                        
+                        <option value="CA">🇨🇦 كندا</option>
+                        <option value="KR">🇰🇷 كوريا الجنوبية</option>
+                        
+                        <option value="LB">🇱🇧 لبنان</option>
+                        <option value="LY">🇱🇾 ليبيا</option>
+                        
+                        <option value="MY">🇲🇾 ماليزيا</option>
+                        <option value="EG">🇪🇬 مصر</option>
+                        <option value="MR">🇲🇷 موريتانيا</option>
+                        
+                        <option value="NZ">🇳🇿 نيوزيلندا</option>
+                        
+                        <option value="NL">🇳🇱 هولندا</option>
+
+                    </select>
+                    <div class="select-arrow">▼</div>
+                </div>
+            </div>
+
+            <div class="input-group">
                 <label>اختار نظام الخدمة</label>
                 <div class="input-wrapper" style="position:relative;">
                     <select id="serviceType" required>
@@ -376,8 +464,7 @@
     </div>
 
     <script>
-        // --- 1. إعدادات الربط - هام جداً ---
-        // استبدل النص بالأسفل برابط الويب هوك الخاص بك من n8n
+        // --- 1. إعدادات الربط ---
         const N8N_WEBHOOK_URL = 'https://testforli.app.n8n.cloud/webhook/16b53ae1-b8b6-4cf4-9863-2b4b6a4c462f'; 
 
         // --- 2. إعدادات المطر ---
@@ -444,7 +531,7 @@
             });
         });
 
-        // --- 4. الإرسال الفعلي (The Fetch Engine) ---
+        // --- 4. الإرسال الفعلي ---
         const form = document.getElementById('astrapyForm');
         
         form.addEventListener('submit', async (e) => {
@@ -452,18 +539,17 @@
             const btn = document.querySelector('.submit-btn');
             const originalText = btn.innerText;
             
-            // حالة التحميل
             btn.innerText = "ESTABLISHING CONNECTION...";
             btn.disabled = true;
             btn.style.opacity = "0.7";
             btn.style.cursor = "wait";
 
-            // جمع البيانات
             const formData = {
                 store_name: document.getElementById('storeName').value,
                 store_url: document.getElementById('storeUrl').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
+                country: document.getElementById('country').value,
                 service_type: document.getElementById('serviceType').value,
                 consumer_key: document.getElementById('consumerKey').value,
                 consumer_secret: document.getElementById('consumerSecret').value,
@@ -471,7 +557,6 @@
             };
             
             try {
-                // إرسال البيانات إلى n8n
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -479,13 +564,11 @@
                 });
 
                 if (response.ok) {
-                    // نجاح الاتصال
                     btn.innerText = "ACTIVATED SUCCESSFULLY ✅";
                     btn.style.background = "#28a745"; 
                     btn.style.boxShadow = "0 0 20px rgba(40, 167, 69, 0.4)";
                     btn.style.opacity = "1";
                     
-                    // إعادة تعيين النموذج بعد ثانيتين
                     setTimeout(() => {
                          btn.innerText = originalText;
                          btn.style.background = ""; 
@@ -499,10 +582,9 @@
                 }
 
             } catch (error) {
-                // فشل الاتصال
                 console.error("Submission Error:", error);
                 btn.innerText = "CONNECTION FAILED ⚠";
-                btn.style.background = "#dc3545"; // أحمر
+                btn.style.background = "#dc3545"; 
                 btn.style.boxShadow = "0 0 20px rgba(220, 53, 69, 0.4)";
                 btn.style.opacity = "1";
 
