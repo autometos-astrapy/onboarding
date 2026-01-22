@@ -1,2 +1,1 @@
 # onboarding
-#Arabic version
