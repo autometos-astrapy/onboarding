@@ -10,6 +10,32 @@
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Cairo:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 
     <style>
+        /* --- إضافة Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #b88a00, #8a6d3b);
+            border-radius: 5px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #d4a000, #a68b44);
+        }
+        
+        /* للمتصفحات الأخرى */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #b88a00 rgba(0, 0, 0, 0.2);
+        }
+
         /* --- المتغيرات --- */
         :root {
             --bg-deep: #050505;
@@ -30,8 +56,9 @@
             align-items: center; 
             font-family: 'Cairo', sans-serif;
             background-color: var(--bg-deep);
-            overflow: hidden;
+            overflow-y: auto; /* تغيير من hidden إلى auto */
             position: relative;
+            padding: 20px;
         }
 
         /* =========================================
@@ -119,6 +146,7 @@
             
             transform: translateY(0);
             animation: floatIn 1s ease-out;
+            margin-bottom: 20px;
         }
 
         @keyframes floatIn {
