@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autometos Astrapy | Service Edition</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Cairo:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- إضافة Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        
+        /* جعل الشريط على اليسار يتطلب ضبط الـ HTML كما فعلنا بالأسفل */
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #b88a00, #8a6d3b);
+            border-radius: 5px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #d4a000, #a68b44);
+        }
+        
+        /* للمتصفحات الأخرى */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #b88a00 rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- المتغيرات --- */
+        :root {
+            --bg-deep: #050505;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --gold-main: #FFD700;
+            --gold-dim: #C5A000;
+            --gold-glow: rgba(255, 215, 0, 0.3);
+            --text-primary: #ffffff;
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        /* الإصلاح هنا: التمرير يتم على مستوى الـ HTML ليظهر الشريط يساراً */
+        html {
+            height: 100%;
+            overflow-y: auto; /* هذا يجبر الشريط ليكون في الجهة الصحيحة للغة (يسار) */
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-deep);
+            position: relative;
+            padding: 20px;
+            /* تمت إزالة overflow-y من هنا */
+        }
+
+        /* =========================================
+           1. نظام الغيوم المتكتلة
+           ========================================= */
+        .storm-system {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 400px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .cloud-base {
+            position: absolute;
+            background: radial-gradient(circle at 50% 100%, #2a2a2a 0%, #0d0d0d 60%, #000 100%);
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: inset -20px -30px 60px rgba(0,0,0,0.9);
+        }
+
+        .cloud-main {
+            top: -180px; left: 50%; transform: translateX(-50%);
+            width: 140vw; height: 350px; z-index: 3;
+        }
+        .cloud-left {
+            top: -120px; left: 10%; width: 60vw; height: 250px;
+            background: radial-gradient(circle at 60% 100%, #222 0%, #0a0a0a 100%); z-index: 2;
+        }
+        .cloud-right {
+            top: -140px; right: 5%; width: 70vw; height: 280px;
+            background: radial-gradient(circle at 40% 100%, #222 0%, #0a0a0a 100%); z-index: 2;
+        }
+        .storm-fade {
+            position: absolute; top: 100px; width: 100%; height: 150px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            z-index: 4; filter: blur(20px);
+        }
+
+        /* =========================================
+           2. عناصر الجو
+           ========================================= */
+        .rain-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 4;
+        }
+        .drop {
+            position: absolute; background: rgba(255, 255, 255, 0.08);
+            width: 1px; height: 100px; top: -150px; animation: fall linear infinite;
+        }
+        @keyframes fall { to { transform: translateY(120vh); } }
+
+        #lightning-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 3; filter: drop-shadow(0 0 20px #fff);
+        }
+        #sky-flash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.06); opacity: 0;
+            pointer-events: none; z-index: 2; transition: opacity 0.05s;
+        }
+
+        /* =========================================
+           3. البطاقة
+           ========================================= */
+        .card {
+            position: relative;
+            z-index: 100;
+            width: 100%;
+            max-width: 460px;
+            padding: 40px 35px;
+            
+            background: rgba(18, 18, 18, 0.88);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0,0,0,1);
+            
+            margin-top: 20px;
+            
+            transform: translateY(0);
+            animation: floatIn 1s ease-out;
+            margin-bottom: 20px;
+        }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        
+        .header h1 {
+            font-family: 'ZCOOL XiaoWei', serif;
+            font-size: 32px; margin: 0; color: #fff;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+        }
+
+        .astrapy-gold {
+            background: linear-gradient(to bottom, #FFD700, #C5A000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            font-weight: normal;
+        }
+        
+        .header p {
+            color: var(--gold-main);
+            font-size: 10px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-top: 12px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px var(--gold-glow);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        /* الحقول والأزرار */
+        .input-group { margin-bottom: 16px; position: relative; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 12px; color: #999; font-weight: 600; }
+        
+        /* تنسيق الـ INPUT */
+        input, select {
+            width: 100%; padding: 13px 15px;
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: #fff; font-family: 'Cairo', sans-serif; font-size: 13px;
+            transition: all 0.25s ease;
+        }
+        input.ltr-input { font-family: 'JetBrains Mono', monospace; direction: ltr; text-align: left; }
+
+        input:focus, select:focus {
+            border-color: var(--gold-main);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        /* --- تنسيق القائمة المنسدلة المخصص (Custom Select) --- */
+        select {
+            appearance: none; /* إخفاء السهم الافتراضي */
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        /* تغيير لون الخلفية للخيارات */
+        select option {
+            background: #111;
+            color: #fff;
+            padding: 10px;
+        }
+
+        /* سهم القائمة المخصص */
+        .select-arrow {
+            position: absolute;
+            left: 15px; /* RTL */
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold-main);
+            pointer-events: none;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        /* تدوير السهم عند التركيز */
+        .input-wrapper:focus-within .select-arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* --- أيقونات الأمان --- */
+        .secure-icon { 
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%); 
+            color: #555; font-size: 12px; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .input-wrapper input:focus ~ .secure-icon,
+        .input-wrapper input:not(:placeholder-shown) ~ .secure-icon {
+            opacity: 0; transform: translateY(-50%) scale(0.5);
+        }
+
+        .submit-btn {
+            width: 100%; padding: 15px; margin-top: 20px;
+            border: none; border-radius: 10px;
+            background: linear-gradient(135deg, #b88a00, #8a6d3b);
+            color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            text-transform: uppercase;
+        }
+        .submit-btn:hover { 
+            transform: translateY(-2px); 
+            background: linear-gradient(135deg, #d4a000, #a68b44);
+            box-shadow: 0 0 25px rgba(184, 138, 0, 0.3);
+        }
+
+        .footer-section {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .help-label { font-size: 13px; color: #777; font-weight: 600; }
+        .links-container {
+            display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;
+        }
+        .pdf-link {
+            display: flex; align-items: center; gap: 8px; text-decoration: none;
+            background: rgba(255,255,255,0.03); padding: 8px 15px; border-radius: 8px;
+            border: 1px solid transparent; transition: 0.3s;
+        }
+        .pdf-link:hover {
+            background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.2);
+        }
+        .pdf-link span { font-size: 12px; color: #aaa; transition: 0.3s; }
+        .pdf-link:hover span { color: var(--gold-main); }
+        .pdf-icon { font-size: 14px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="storm-system">
+        <div class="cloud-base cloud-left"></div>
+        <div class="cloud-base cloud-right"></div>
+        <div class="cloud-base cloud-main"></div>
+        <div class="storm-fade"></div>
+    </div>
+
+    <div id="sky-flash"></div>
+    <svg id="lightning-canvas"></svg>
+    <div class="rain-container" id="rain"></div>
+
+    <div class="card">
+        <div class="header">
+            <h1>
+                AUTOMETOS <span class="astrapy-gold">ASTRAPY</span>
+            </h1>
+            <p>// System Activation Protocol //</p>
+        </div>
+
+        <form id="astrapyForm">
+            <div class="input-group">
+                <label>اسم المتجر (Store Name)</label>
+                <input type="text" id="storeName" placeholder="مثال: متجر الأناقة" required>
+            </div>
+
+            <div class="input-group">
+                <label>رابط المتجر (Store URL)</label>
+                <input type="url" id="storeUrl" class="ltr-input" placeholder="https://example.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>نوع المتجر (Store Type)</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <select id="storeType" required>
+                        <option value="" disabled selected>اختر نوع المتجر...</option>
+                        <option value="shopify">Shopify</option>
+                        <option value="woocommerce">WooCommerce</option>
+                    </select>
+                    <div class="select-arrow">▼</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="email" class="ltr-input" placeholder="admin@store.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>رقم الهاتف <span style="font-size:10px; opacity:0.5;">(اختياري)</span></label>
+                <input type="tel" id="phone" class="ltr-input" placeholder="+20 1xxxxxxxxx">
+            </div>
+
+            <div class="input-group">
+                <label>الدولة (Country)</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <select id="country" required>
+                        <option value="" disabled selected>اختر دولتك...</option>
+                        
+                        <option value="AU">🇦🇺 أستراليا</option>
+                        <option value="DE">🇩🇪 ألمانيا</option>
+                        <option value="IE">🇮🇪 أيرلندا</option>
+                        
+                        <option value="ES">🇪🇸 إسبانيا</option>
+                        <option value="ID">🇮🇩 إندونيسيا</option>
+                        <option value="IT">🇮🇹 إيطاليا</option>
+                        
+                        <option value="JO">🇯🇴 الأردن</option>
+                        <option value="AE">🇦🇪 الإمارات</option>
+                        <option value="BH">🇧🇭 البحرين</option>
+                        <option value="BR">🇧🇷 البرازيل</option>
+                        <option value="PT">🇵🇹 البرتغال</option>
+                        <option value="DZ">🇩🇿 الجزائر</option>
+                        <option value="DK">🇩🇰 الدنمارك</option>
+                        <option value="SA">🇸🇦 السعودية</option>
+                        <option value="SD">🇸🇩 السودان</option>
+                        <option value="SE">🇸🇪 السويد</option>
+                        <option value="SO">🇸🇴 الصومال</option>
+                        <option value="CN">🇨🇳 الصين</option>
+                        <option value="IQ">🇮🇶 العراق</option>
+                        <option value="KW">🇰🇼 الكويت</option>
+                        <option value="MA">🇲🇦 المغرب</option>
+                        <option value="MX">🇲🇽 المكسيك</option>
+                        <option value="UK">🇬🇧 المملكة المتحدة</option>
+                        <option value="NO">🇳🇴 النرويج</option>
+                        <option value="AT">🇦🇹 النمسا</option>
+                        <option value="IN">🇮🇳 الهند</option>
+                        <option value="US">🇺🇸 الولايات المتحدة</option>
+                        <option value="JP">🇯🇵 اليابان</option>
+                        <option value="YE">🇾🇪 اليمن</option>
+                        
+                        <option value="PK">🇵🇰 باكستان</option>
+                        <option value="BE">🇧🇪 بلجيكا</option>
+                        <option value="PL">🇵🇱 بولندا</option>
+                        
+                        <option value="TR">🇹🇷 تركيا</option>
+                        <option value="TN">🇹🇳 تونس</option>
+                        
+                        <option value="KM">🇰🇲 جزر القمر</option>
+                        <option value="ZA">🇿🇦 جنوب إفريقيا</option>
+                        <option value="DJ">🇩🇯 جيبوتي</option>
+                        
+                        <option value="RU">🇷🇺 روسيا</option>
+                        
+                        <option value="SG">🇸🇬 سنغافورة</option>
+                        <option value="SY">🇸🇾 سوريا</option>
+                        <option value="CH">🇨🇭 سويسرا</option>
+                        
+                        <option value="OM">🇴🇲 عمان</option>
+                        
+                        <option value="FR">🇫🇷 فرنسا</option>
+                        <option value="PS">🇵🇸 فلسطين</option>
+                        
+                        <option value="QA">🇶🇦 قطر</option>
+                        
+                        <option value="CA">🇨🇦 كندا</option>
+                        <option value="KR">🇰🇷 كوريا الجنوبية</option>
+                        
+                        <option value="LB">🇱🇧 لبنان</option>
+                        <option value="LY">🇱🇾 ليبيا</option>
+                        
+                        <option value="MY">🇲🇾 ماليزيا</option>
+                        <option value="EG">🇪🇬 مصر</option>
+                        <option value="MR">🇲🇷 موريتانيا</option>
+                        
+                        <option value="NZ">🇳🇿 نيوزيلندا</option>
+                        
+                        <option value="NL">🇳🇱 هولندا</option>
+
+                    </select>
+                    <div class="select-arrow">▼</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>اختار نظام الخدمة</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <select id="serviceType" required>
+                        <option value="" disabled selected>اختر النظام الذي تريد تفعيله...</option>
+                        <option value="profit_recovery">Profit Recovery System</option>
+                    </select>
+                    <div class="select-arrow">▼</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Consumer Key</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <input type="text" id="consumerKey" class="ltr-input" required placeholder=" ">
+                    <span class="secure-icon">🔒</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Consumer Secret</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <input type="password" id="consumerSecret" class="ltr-input" required placeholder=" ">
+                    <span class="secure-icon">🔒</span>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit the form</button>
+        </form>
+
+        <div class="footer-section">
+            <span class="help-label">هل تحتاج مساعدة؟</span>
+            <div class="links-container">
+                <a href="LINK_SHOPIFY_HERE" target="_blank" class="pdf-link">
+                    <span class="pdf-icon">📄</span>
+                    <span>دليل Shopify</span>
+                </a>
+                <a href="LINK_WOOCOMMERCE_HERE" target="_blank" class="pdf-link">
+                    <span class="pdf-icon">📄</span>
+                    <span>دليل WooCommerce</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. إعدادات الربط ---
+        const N8N_WEBHOOK_URL = 'https://testforli.app.n8n.cloud/webhook/16b53ae1-b8b6-4cf4-9863-2b4b6a4c462f'; 
+
+        // --- 2. إعدادات المطر ---
+        const rainContainer = document.getElementById('rain');
+        function createRain() {
+            for(let i=0; i<60; i++) { 
+                const drop = document.createElement('div');
+                drop.classList.add('drop');
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDuration = Math.random() * 0.8 + 0.5 + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                drop.style.opacity = Math.random() * 0.5 + 0.1;
+                rainContainer.appendChild(drop);
+            }
+        }
+        createRain();
+
+        // --- 3. محرك البرق ---
+        const svgCanvas = document.getElementById('lightning-canvas');
+        const skyFlash = document.getElementById('sky-flash');
+        const inputs = document.querySelectorAll('input, select'); 
+
+        function createLightningBolt() {
+            let startX = (Math.random() > 0.5) ? Math.random() * 15 : 85 + Math.random() * 15;
+            let currentX = startX;
+            let currentY = 0;
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            
+            let pathData = `M ${startX/100 * screenW} 0 `;
+            let rX = startX/100 * screenW;
+            let rY = 0;
+            
+            while (rY < screenH) {
+                rY += Math.random() * 30 + 10; 
+                rX += (Math.random() - 0.5) * 60; 
+                pathData += `L ${rX} ${rY} `;
+            }
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", pathData);
+            path.setAttribute("stroke", "white");
+            path.setAttribute("stroke-width", "2");
+            path.setAttribute("fill", "none");
+            path.style.opacity = "0";
+            path.style.filter = "drop-shadow(0 0 10px #fff)";
+
+            svgCanvas.appendChild(path);
+
+            skyFlash.style.opacity = "0.1";
+            setTimeout(() => skyFlash.style.opacity = "0", 60);
+
+            path.style.opacity = "1";
+            setTimeout(() => {
+                path.style.opacity = "0";
+                setTimeout(() => path.remove(), 200);
+            }, 120);
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                createLightningBolt();
+                if(Math.random() > 0.5) setTimeout(createLightningBolt, 150);
+            });
+        });
+
+        // --- 4. الإرسال الفعلي ---
+        const form = document.getElementById('astrapyForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.querySelector('.submit-btn');
+            const originalText = btn.innerText;
+            
+            btn.innerText = "ESTABLISHING CONNECTION...";
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+            btn.style.cursor = "wait";
+
+            const formData = {
+                store_name: document.getElementById('storeName').value,
+                store_url: document.getElementById('storeUrl').value,
+                store_type: document.getElementById('storeType').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                country: document.getElementById('country').value,
+                service_type: document.getElementById('serviceType').value,
+                consumer_key: document.getElementById('consumerKey').value,
+                consumer_secret: document.getElementById('consumerSecret').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    btn.innerText = "ACTIVATED SUCCESSFULLY ✅";
+                    btn.style.background = "#28a745"; 
+                    btn.style.boxShadow = "0 0 20px rgba(40, 167, 69, 0.4)";
+                    btn.style.opacity = "1";
+                    
+                    setTimeout(() => {
+                         btn.innerText = originalText;
+                         btn.style.background = ""; 
+                         btn.style.boxShadow = "";
+                         btn.disabled = false;
+                         btn.style.cursor = "pointer";
+                         form.reset();
+                    }, 3000);
+                } else {
+                    throw new Error('Server returned an error');
+                }
+
+            } catch (error) {
+                console.error("Submission Error:", error);
+                btn.innerText = "CONNECTION FAILED ⚠";
+                btn.style.background = "#dc3545"; 
+                btn.style.boxShadow = "0 0 20px rgba(220, 53, 69, 0.4)";
+                btn.style.opacity = "1";
+
+                setTimeout(() => {
+                    btn.innerText = "RETRY SUBMISSION";
+                    btn.style.background = ""; 
+                    btn.style.boxShadow = "";
+                    btn.disabled = false;
+                    btn.style.cursor = "pointer";
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
