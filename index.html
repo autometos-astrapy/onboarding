@@ -328,6 +328,18 @@
             </div>
 
             <div class="input-group">
+                <label>نوع المتجر (Store Type)</label>
+                <div class="input-wrapper" style="position:relative;">
+                    <select id="storeType" required>
+                        <option value="" disabled selected>اختر نوع المتجر...</option>
+                        <option value="shopify">Shopify</option>
+                        <option value="woocommerce">WooCommerce</option>
+                    </select>
+                    <div class="select-arrow">▼</div>
+                </div>
+            </div>
+
+            <div class="input-group">
                 <label>البريد الإلكتروني</label>
                 <input type="email" id="email" class="ltr-input" placeholder="admin@store.com" required>
             </div>
@@ -547,6 +559,7 @@
             const formData = {
                 store_name: document.getElementById('storeName').value,
                 store_url: document.getElementById('storeUrl').value,
+                store_type: document.getElementById('storeType').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 country: document.getElementById('country').value,
